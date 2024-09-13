@@ -12,6 +12,7 @@
 #include <regex>
 #include <utility>
 #include <cstdlib>
+#include <cmath>
 using namespace std;
 
 string menu(){
@@ -218,13 +219,13 @@ void solveEquation(vector<pair<string,string>> vec, bool secState) {
 					result = stoi(leftValue) - stoi(opLeft);
 					break;
 				case '-':
-					result = stoi(leftValue) + stoi(opLeft);
+					result = stoi(opLeft) - stoi(leftValue);
 					break;
 				case '*':
 					result = stoi(leftValue) / stoi(opLeft);
 					break;
 				case '/':
-					result = stoi(leftValue) * stoi(opLeft);
+					result = stoi(opLeft) / stoi(leftValue);
 					break;
 			}
 			cout << opRight << " is " << result << endl;
@@ -258,7 +259,72 @@ void solveEquation(vector<pair<string,string>> vec, bool secState) {
 		} else {
 			cout << "Invalid Statement" << endl;
 		}
-	} 
+		return;
+	}
+
+	string rightValue = vec[4].second;
+	string opLeft = vec[0].second;
+	string opRight = vec[2].second;
+	char op = vec[1].second[0];
+	int result;
+
+	if (varPos[0] == 0) {
+		switch (op) {
+			case '+':
+				result = stoi(rightValue) - stoi(opRight);
+				break;
+			case '-':
+				result = stoi(rightValue) + stoi(opRight);
+				break;
+			case '*':
+				result = stoi(rightValue) / stoi(opRight);
+				break;
+			case '/':
+				result = stoi(rightValue) * stoi(opRight);
+				break;
+		}
+		cout << opLeft << " is " << result << endl;
+		return;
+	}
+
+	if (varPos[0] == 2) {
+		switch (op) {
+			case '+':
+				result = stoi(rightValue) - stoi(opLeft);
+				break;
+			case '-':
+				result = stoi(opLeft) - stoi(rightValue);
+				break;
+			case '*':
+				result = stoi(rightValue) / stoi(opLeft);
+				break;
+			case '/':
+				result = stoi(opLeft) / stoi(rightValue);
+				break;
+		}
+		cout << opRight << " is " << result << endl;
+		return;
+	}
+
+	if (varPos[0] == 4) {
+		switch (op) {
+			case '+':
+				result = stoi(opLeft) + stoi(opRight);
+				break;
+			case '-':
+				result = stoi(opLeft) - stoi(opRight);
+				break;
+			case '*':
+				result = stoi(opLeft) * stoi(opRight);
+				break;
+			case '/':
+				result = stoi(opLeft) / stoi(opRight);
+				break;
+		}
+		cout << rightValue << " is " << result << endl;
+		return;
+	}
+	
 	return ;
 }
 

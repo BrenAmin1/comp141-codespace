@@ -134,6 +134,7 @@ void solveEquation(vector<pair<string,string>> vec, bool secState) {
 		}
 
 	cout << "varPose: " << varPos.size() << endl;
+	// A Eq A Op A
 	if (secState) {
 		// number = number Op number
 		if (varPos.size() == 0){
@@ -163,6 +164,70 @@ void solveEquation(vector<pair<string,string>> vec, bool secState) {
 			} else {
 				cout << "Invalid Statement" << endl;
 			}
+			return; // not sure if I should return it here
+		}
+
+		string leftValue = vec[0].second;
+		string opLeft = vec[2].second;
+		string opRight = vec[4].second;
+		char op = vec[3].second[0];
+		int result;
+		
+		if (varPos[0] == 0) {
+
+			switch (op) {
+				case '+':
+					result = stoi(opLeft) + stoi(opRight);
+					break;
+				case '-':
+					result = stoi(opLeft) - stoi(opRight);
+					break;
+				case '*':
+					result = stoi(opLeft) * stoi(opRight);
+					break;
+				case '/':
+					result = stoi(opLeft) / stoi(opRight);
+					break;
+			}
+			cout << leftValue << " is " << result << endl;
+		}
+
+		if (varPos[0] == 2) {
+
+			switch (op) {
+				case '+':
+					result = stoi(leftValue) - stoi(opRight);
+					break;
+				case '-':
+					result = stoi(leftValue) + stoi(opRight);
+					break;
+				case '*':
+					result = stoi(leftValue) / stoi(opRight);
+					break;
+				case '/':
+					result = stoi(leftValue) * stoi(opRight);
+					break;
+			}
+			cout << opLeft << " is " << result << endl;
+		}
+
+		if (varPos[0] == 4) {
+
+			switch (op) {
+				case '+':
+					result = stoi(leftValue) - stoi(opLeft);
+					break;
+				case '-':
+					result = stoi(leftValue) + stoi(opLeft);
+					break;
+				case '*':
+					result = stoi(leftValue) / stoi(opLeft);
+					break;
+				case '/':
+					result = stoi(leftValue) * stoi(opLeft);
+					break;
+			}
+			cout << opRight << " is " << result << endl;
 		}
 }
 // number Op number = number
@@ -199,6 +264,7 @@ void solveEquation(vector<pair<string,string>> vec, bool secState) {
 
 int main() {
 	string userInput;
+	
 	while (true) {
 		userInput = menu();
 		if (userInput == "x" || userInput == "X") {
@@ -214,19 +280,18 @@ int main() {
 		};
 
 		if (!isValidStatement(validTokens)) {
-					continue; // if state is not valid, prompt user again for new statement
-			};
+			continue; // if state is not valid, prompt user again for new statement
+		};
 
-			// checking if it matches `A Eq A Op A`
+		// checking if it matches `A Eq A Op A`
 		isSecondStatement = matchSecondStatement(validTokens);
 
 		solveEquation(validTokens, isSecondStatement);
 
-	// 	for(pair<string, string>token : validTokens) {
-	// 		cout << token.first << " " << token.second << endl;
-	// 	};
-			cout << "\n\n"; // not sure if this is the right way of adding an extra line at the end
-
+		// 	for(pair<string, string>token : validTokens) {
+		// 		cout << token.first << " " << token.second << endl;
+		// 	};
+		cout << "\n\n"; // not sure if this is the right way of adding an extra line at the end
 	}
 
 

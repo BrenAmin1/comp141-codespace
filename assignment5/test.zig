@@ -2,6 +2,7 @@
 //DATE: 8/22/24
 //FILE: test.zig
 //This file provides a short example of how to code in Zig
+//HOW TO RUN: ZIG RUN TEST.ZIG
 const std = @import("std");
 const print = std.debug.print;
 var twoDarray = [3][3]u8{

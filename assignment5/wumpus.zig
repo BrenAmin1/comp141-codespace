@@ -14,30 +14,6 @@ var maze = [4][6]u8{
     .{ 'O', 'O', 'O', 'O', 'O', 'O' },
 };
 
-//function to count the occurences of letter in maze
-fn countIn2Darray(letter: u8) c_int {
-    var total: c_int = 0;
-
-    for (0..3) |r| {
-        for (0..3) |c| {
-            if (maze[r][c] == letter) {
-                total += 1;
-            }
-        }
-    }
-    return total;
-}
-
-//function that returns a random character in maze
-fn randomCharIn2Darray() u8 {
-    const rand = std.crypto.random;
-
-    const col: usize = rand.intRangeAtMost(u8, 0, 5);
-    const row: usize = rand.intRangeAtMost(u8, 0, 3);
-
-    return maze[row][col];
-}
-
 //function to print the contents of the array
 fn printMaze() void {
     for (0..4) |i| {
@@ -79,29 +55,39 @@ fn initMaze() void {
     maze[row][col] = 'W';
 }
 
-fn characterMove(playerMove: u8, curPlayerRow: usize, curPlayerCol: usize) bool {
+fn characterMove(playerMove: u8, curPlayerRow: usize, curPlayerCol: usize) void {
     if (playerMove == 'u' and checkWall(curPlayerRow + 1, curPlayerCol)) {
         playerRow += 1;
         checkMove(playerRow, playerCol);
         print("up\n", .{});
     }
-    if (playerMove == 'd' and checkWall(curPlayerRow - 1, curPlayerCol)) {
-        playerRow -= 1;
-        print("down\n", .{});
+    if (playerMove == 'd' and curPlayerRow != 0) {
+        if (checkWall(curPlayerRow - 1, curPlayerCol)) {
+            playerRow -= 1;
+            checkMove(playerRow, playerCol);
+            print("down\n", .{});
+        }
+    } else {
+        print("Ouch! You ran into a wall\n", .{});
     }
-    if (playerMove == 'l' and checkWall(curPlayerRow, curPlayerCol - 1)) {
-        playerCol -= 1;
-        print("left\n", .{});
+    if (playerMove == 'l' and curPlayerCol != 0) {
+        if (checkWall(curPlayerRow, curPlayerCol - 1)) {
+            playerCol -= 1;
+            checkMove(playerRow, playerCol);
+            print("left\n", .{});
+        }
+    } else {
+        return;
     }
     if (playerMove == 'r' and checkWall(curPlayerRow, curPlayerCol + 1)) {
         playerCol += 1;
+        checkMove(playerRow, playerCol);
         print("right\n", .{});
     }
-    return true;
 }
 
 test "moveChar" {
-    if (characterMove('u', 1, 2) == true) {
+    if (characterMove('d', 0, 2) == true) {
         print("test", .{});
     }
 }
@@ -115,13 +101,12 @@ fn checkWall(newPlayerRow: usize, newPlayerCol: usize) bool {
     return true;
 }
 
-// pub fn checkWall(dir: u8, row: usize, col: usize) bool {
-//     if ((dir == 'u' and row < 1) or (dir == 'l' and col < 1) or (dir == 'd' and row == 3) or (dir == 'r' and col == 5)) {
-//         print("Ouch! You ran into a wall", .{});
-//         return true;
-//     }
-//     return false;
-// }
+fn checkArrowHitWall(newPlayerRow: usize, newPlayerCol: usize) bool {
+    if ((newPlayerRow > 3) or (newPlayerRow < 0) or (newPlayerCol > 5) or (newPlayerCol < 0)) {
+        return false;
+    }
+    return true;
+}
 
 test "check wall" {
     if (checkWall(1, 2) == true) {
@@ -129,16 +114,18 @@ test "check wall" {
     }
 }
 
-fn checkMove(newRow: usize, newCol: usize) bool {
+fn checkMove(newRow: usize, newCol: usize) void {
     //check to see if user finds the wumpus
-    if (maze[newRow][newCol] == 'w') {
+    if (maze[newRow][newCol] == 'W') {
         // print appropriate message for player beeing eaten an terminate the program
-        return false; // maybe will need to return something else
+        print("You've been eaten by the WUMPUS!\n", .{});
+        //return false; // maybe will need to return something else
     }
     // checks to see if user fell in a pit
-    else if (maze[newRow][newCol] == 'p') {
+    else if (maze[newRow][newCol] == 'P') {
         // print appropriate message for player falling in a pit and terminate the program
-        return false; // maybe will need to return something else
+        print("You've fallen into a pit and have perished!\n", .{});
+        //return false; // maybe will need to return something else
     }
 
     // check if user is near a pit or the wumpus
@@ -146,13 +133,83 @@ fn checkMove(newRow: usize, newCol: usize) bool {
     if (newRow > 0 and maze[newRow - 1][newCol] != 'O') {
         if (maze[newRow - 1][newCol] == 'P') {
             // print message for breeze
-        }
-        else{
+            print("You feel a breeze...\n", .{});
+        } else {
+            print("You smell a stench...\n", .{});
             // print message for stench
         }
-        return 1;
+        //return true; // maybe will need to return something else
     }
-    // checking for other sides ...
+    // checking for other for below
+    if (newRow < 3 and maze[newRow + 1][newCol] != 'O') {
+        if (maze[newRow + 1][newCol] == 'P') {
+            // print message for breeze
+            print("You feel a breeze...\n", .{});
+        } else {
+            // print message for stench
+            print("You smell a stench...\n", .{});
+        }
+        //return true;
+    }
+    // checking for other for right
+    if (newRow < 3 and maze[newRow][newCol + 1] != 'O') {
+        if (maze[newRow + 1][newCol] == 'P') {
+            // print message for breeze
+            print("You feel a breeze...\n", .{});
+        } else {
+            // print message for stench
+            print("You smell a stench...\n", .{});
+        }
+        //return true;
+    }
+    // checking for other for left
+    if (newRow < 3 and maze[newRow][newCol - 1] != 'O') {
+        if (maze[newRow + 1][newCol] == 'P') {
+            // print message for breeze
+            print("You feel a breeze...\n", .{});
+        } else {
+            // print message for stench
+            print("You smell a stench...\n", .{});
+        }
+        //return true;
+    }
+}
+
+fn checkShoot(dir: u8, curPlayerRow: usize, curPlayerCol: usize) bool {
+    if (dir == 'u') {
+        if (checkArrowHitWall(curPlayerRow + 1, curPlayerCol)) {
+            if (maze[curPlayerRow + 1][curPlayerCol] == 'w') {
+                return true;
+            }
+        }
+    } else if (dir == 'r') {
+        if (checkArrowHitWall(curPlayerRow, curPlayerCol + 1)) {
+            if (maze[curPlayerRow][curPlayerCol + 1] == 'w') {
+                return true;
+            }
+        }
+    } else if (dir == 'd') {
+        if (curPlayerRow == 0) {
+            return false;
+        } else {
+            if (checkArrowHitWall(curPlayerRow - 1, curPlayerCol)) {
+                if (maze[curPlayerRow - 1][curPlayerCol] == 'd') {
+                    return true;
+                }
+            }
+        }
+    } else if (dir == 'l') {
+        if (curPlayerCol == 0) {
+            return false;
+        } else {
+            if (checkArrowHitWall(curPlayerRow, curPlayerCol - 1)) {
+                if (maze[curPlayerRow][curPlayerCol - 1] == 'w') {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 var playerRow: usize = 3; // TODO: change to var once we create function that moves player arond
@@ -165,7 +222,7 @@ pub fn main() !void {
     var shotChoice: u8 = '1';
 
     initMaze();
-    printMaze();
+    //printMaze();
     printMap(playerRow, playerCol);
 
     while (choice != 'q') {
@@ -174,10 +231,19 @@ pub fn main() !void {
         const input = try reader.readUntilDelimiter(&buffer, '\n');
         choice = input[0];
         if (choice == 's') {
-            print("\nWhat direction do you want to shoot your arrow:\n ", .{});
-            print("u) up\n d) down\n l) left\n r) right\n ENTER CHOICE: ", .{});
+            print("\nWhat direction do you want to shoot your arrow:\n", .{});
+            print(" u) up\n d) down\n l) left\n r) right\n ENTER CHOICE: ", .{});
             const direction = try reader.readUntilDelimiter(&buffer, '\n');
             shotChoice = direction[0];
+            if (shotChoice != 'u' or shotChoice != 'd' or shotChoice != 'l' or shotChoice != 'r') {
+                print("\nInvalid choice\n\n", .{});
+            }
+            if (!checkShoot(shotChoice, playerRow, playerCol)) {
+                print("You missed and failed to slay the WUMPUS!\n", .{});
+                break;
+            } else {
+                print("You slayed the WUMPUS! You win!\n", .{});
+            }
             // add function call to know if you killed monster
             // printing maze because after shooting, the game is done no matter what
             printMaze();
@@ -187,15 +253,17 @@ pub fn main() !void {
             printMap(playerRow, playerCol);
         } else if (choice == 'd') {
             // need to update the player pos before calling the print map
+            characterMove(choice, playerRow, playerCol);
             printMap(playerRow, playerCol);
         } else if (choice == 'l') {
             // need to update the player pos before calling the print map
+            characterMove(choice, playerRow, playerCol);
             printMap(playerRow, playerCol);
         } else if (choice == 'r') {
             // need to update the player pos before calling the print map
             printMap(playerRow, playerCol);
         } else if (choice != 'q') {
-            print("\nInvalid choice\n", .{});
+            print("\nInvalid choice\n\n", .{});
         }
     }
 }

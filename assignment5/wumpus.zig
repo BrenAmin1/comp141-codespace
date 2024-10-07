@@ -98,6 +98,7 @@ fn checkWall(newPlayerRow: usize, newPlayerCol: usize) bool {
 fn checkMove(newRow: usize, newCol: usize) void {
     //check to see if user finds the wumpus
     if (maze[newRow][newCol] == 'W') {
+        // print appropriate message for player beeing eaten an terminate the program
         print("\nYou've been eaten by the WUMPUS!\n", .{});
         printMaze();
         std.process.exit(0);
@@ -155,7 +156,6 @@ fn checkMove(newRow: usize, newCol: usize) void {
             // print message for stench
             print("You smell a stench...\n", .{});
         }
-        //return true;
     }
 }
 

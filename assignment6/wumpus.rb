@@ -1,11 +1,7 @@
-#PROGRAMMERS: Joao Engel, Brendon Amino, Teran Upchurch
+#PROGRAMMER: Joao Engel, Brendon Amino, Teran Upchurch
 #DATE: 10/09/24
 #FILE: wumpus.rb
-
-# A text-based game where players navigate a 6x4 maze to hunt the Wumpus.
-# Players can move or shoot to defeat the Wumpus while avoiding deadly pits.
-# Sensory cues indicate nearby dangers, and the game features random placement
-# of the Wumpus and pits for varied experiences.
+#This file provides a short example of how to code in Ruby
 
 #This is the defintion of our Base class
 class Tile

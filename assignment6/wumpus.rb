@@ -130,7 +130,22 @@ class Composition
 	end
 
 	def playerShoot(letter)
-		
+		if row > 0
+			
+		end
+		# check for bottom tile
+		if row < 3
+			
+		end
+		# check for left tile
+		if col > 0
+			
+		end
+		# check for right tile
+		if col < 5
+			
+		end
+	end
 
 	# #prints the object in arr at row and col
 	# def objectAtIn2Darray(row, col)

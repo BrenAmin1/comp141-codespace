@@ -29,9 +29,12 @@ class Tile
  end
  
  
- # Derived class EmptyTile represents an empty tile in the maze
- class EmptyTile < Tile
-    def type
+ # Derived class Location (formerly EmptyTile) represents an empty tile in the maze
+ class Location < Tile
+    def visit #Returns newline
+        puts ""
+    end
+    def type #In place of "print"
         "O"  # Denotes empty tile type
     end
  end
@@ -60,10 +63,10 @@ class Tile
     # Initializes a 6x4 empty maze and sets the player start position
     def initialize()
         @maze = [
-        [EmptyTile.new, EmptyTile.new, EmptyTile.new, EmptyTile.new, EmptyTile.new, EmptyTile.new],
-        [EmptyTile.new, EmptyTile.new, EmptyTile.new, EmptyTile.new, EmptyTile.new, EmptyTile.new],
-        [EmptyTile.new, EmptyTile.new, EmptyTile.new, EmptyTile.new, EmptyTile.new, EmptyTile.new],
-        [EmptyTile.new, EmptyTile.new, EmptyTile.new, EmptyTile.new, EmptyTile.new, EmptyTile.new]
+        [Location.new, Location.new, Location.new, Location.new, Location.new, Location.new],
+        [Location.new, Location.new, Location.new, Location.new, Location.new, Location.new],
+        [Location.new, Location.new, Location.new, Location.new, Location.new, Location.new],
+        [Location.new, Location.new, Location.new, Location.new, Location.new, Location.new]
         ]
         @playerRow = 3  # Player starts at the bottom left
         @playerCol = 0
@@ -201,9 +204,9 @@ class Tile
             choice = gets.chomp
             puts ""
 
-            if choice == "q" #If player quits, don't print map but maze instead
+            if choice == "q" #If player quits, prints quitting game and doesn't print anything else
                 puts "Quitting game..."
-                printMaze
+                #printMaze
                 break
             end
             if choice != "s" and choice != "u" and choice != "d" and choice != "l" and choice != "r" and choice != "q"

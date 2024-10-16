@@ -18,22 +18,23 @@ class Tile
     end
   
     # Sets the sensoryQueue with the provided action string
-    def SetsensoryQueue(action)
+    def setSensoryQueue(action)
         @sensoryQueue = action
     end
  
     # Retrieves the sensoryQueue
-    def GetsensoryQueue
+    def getSensoryQueue
         @sensoryQueue
+    end
+
+    def visit #By default returns newline, used to print tile specific messages
+        puts ""
     end
  end
  
  
  # Derived class Location (formerly EmptyTile) represents an empty tile in the maze
  class Location < Tile
-    def visit #Returns newline
-        puts ""
-    end
     def type #In place of "print"
         "O"  # Denotes empty tile type
     end
@@ -42,6 +43,10 @@ class Tile
  
  # Derived class Pit represents a pit in the maze
  class Pit < Tile
+    def visit #Override
+        puts "You've fallen into a pit and have perished!"
+    end
+    
     def type
         "P"  # Denotes pit tile type
     end
@@ -50,6 +55,10 @@ class Tile
 
  # Derived class Wumpus represents the Wumpus in the maze
  class Wumpus < Tile
+    def visit #Override
+        puts "You've been eaten by the WUMPUS!"
+    end
+
     def type
         "W"  # Denotes Wumpus tile type
     end
@@ -98,7 +107,7 @@ class Tile
             for c in 0..5 do
                 print "#{@maze[r][c].type} "
             end
-            puts ""
+            @maze[3][0].visit #Player starting location: always considered empty tile and will thus return newline
         end
     end
  
@@ -137,28 +146,28 @@ class Tile
     # Checks the current tile for hazards (Wumpus or Pit) after each move
     def checkMove
         playerCurrentPos = @maze[@playerRow][@playerCol]
-        if playerCurrentPos.type == "W"
-            puts "You've been eaten by the WUMPUS!"
+        if playerCurrentPos.type == "W" #Checks for Wumpus, then calls Wumpus tile's visit method
+            playerCurrentPos.visit
             printMaze
             exit(0)  # End game
-        elsif playerCurrentPos.type == "P"
-            puts "You've fallen into a pit and have perished!"
+        elsif playerCurrentPos.type == "P" #Checks for Pit, then calls Pit tile's visit method
+            playerCurrentPos.visit
             printMaze
             exit(0)  # End game
         end
  
         # Provide sensory feedback about nearby dangers
-        print "#{playerCurrentPos.GetsensoryQueue}"
+        print "#{playerCurrentPos.getSensoryQueue}"
     end
  
     # Shoots an arrow in the specified direction to try to slay the Wumpus
     def playerShoot(choice)
         if choice == 'u' and @playerRow > 0 and @maze[@playerRow - 1][@playerCol].type == "W"
-            puts "You slayed the WUMPUS! You win!"
+            puts "\nYou slayed the WUMPUS! You win!"
         elsif choice == 'd' and @playerRow < 3 and @maze[@playerRow + 1][@playerCol].type == "W"
-            puts "You slayed the WUMPUS! You win!"
+            puts "\nYou slayed the WUMPUS! You win!"
         elsif choice == 'l' and @playerCol > 0 and @maze[@playerRow][@playerCol - 1].type == "W"
-            puts "You slayed the WUMPUS! You win!"
+            puts "\nYou slayed the WUMPUS! You win!"
         elsif choice == 'r' and @playerCol < 5 and @maze[@playerRow][@playerCol + 1].type == "W"
             puts "\nYou slayed the WUMPUS! You win!"
         else
@@ -174,21 +183,21 @@ class Tile
       
         # Add sensory cues to adjacent tiles (up, down, left, right)
         if row > 0 and @maze[row - 1][col].type == "O"
-            @maze[row - 1][col].SetsensoryQueue(@maze[row - 1][col].GetsensoryQueue + action_text)
+            @maze[row - 1][col].setSensoryQueue(@maze[row - 1][col].getSensoryQueue + action_text)
         end
         if row < 3 and @maze[row + 1][col].type == "O"
-            @maze[row + 1][col].SetsensoryQueue(@maze[row + 1][col].GetsensoryQueue + action_text)
+            @maze[row + 1][col].setSensoryQueue(@maze[row + 1][col].getSensoryQueue + action_text)
         end
         if col > 0 and @maze[row][col - 1].type == "O"
-            @maze[row][col - 1].SetsensoryQueue(@maze[row][col - 1].GetsensoryQueue + action_text)
+            @maze[row][col - 1].setSensoryQueue(@maze[row][col - 1].getSensoryQueue + action_text)
         end
         if col < 5 and @maze[row][col + 1].type == "O"
-            @maze[row][col + 1].SetsensoryQueue(@maze[row][col + 1].GetsensoryQueue + action_text)
+            @maze[row][col + 1].setSensoryQueue(@maze[row][col + 1].getSensoryQueue + action_text)
         end
     end
  
     # Main game loop where players can move, shoot, or quit
-    def menu
+    def play
         choice = "O"
         checkMove # letting player know if it is next to a pit or wumpus before first move
         while choice != "q"
@@ -242,4 +251,4 @@ class Tile
  c = Game.new #create a new Game object called c
  c.printMap
  c.initMaze
- c.menu  # starts the game menu
+ c.play  # starts the game menu
